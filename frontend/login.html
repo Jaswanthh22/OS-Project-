@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In | Auth Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body data-page="login">
+  <div class="card">
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Enter your credentials to receive a one-time code.</p>
+
+    <form id="login-form" autocomplete="off">
+      <label for="login-username">Username</label>
+      <input id="login-username" name="username" type="text" placeholder="jane.doe" required>
+
+      <label for="login-password">Password</label>
+      <input id="login-password" name="password" type="password" placeholder="Your password" required>
+
+      <button type="submit">Get OTP</button>
+    </form>
+
+    <div id="login-message" class="message hidden" role="status"></div>
+
+    <section id="otp-section" class="otp-section hidden">
+      <h2>Enter OTP</h2>
+      <p id="otp-info" class="subtitle">Use the 6-digit code displayed above.</p>
+      <form id="verify-form" autocomplete="off">
+        <label for="otp-input">One-Time Password</label>
+        <input id="otp-input" name="otp" type="text" inputmode="numeric" pattern="[0-9]{6}" placeholder="123456" required>
+        <button type="submit">Verify &amp; Continue</button>
+      </form>
+      <div id="otp-message" class="message hidden" role="status"></div>
+    </section>
+
+    <p class="link">New here? <a href="index.html">Create an account</a></p>
+  </div>
+</body>
+</html>

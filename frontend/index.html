@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up | Auth Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body data-page="signup">
+  <div class="card">
+    <h1>Create Account</h1>
+    <p class="subtitle">Sign up to access the secure dashboard.</p>
+    <form id="signup-form" autocomplete="off">
+      <label for="signup-username">Username</label>
+      <input id="signup-username" name="username" type="text" placeholder="jane.doe" required>
+
+      <label for="signup-password">Password</label>
+      <input id="signup-password" name="password" type="password" minlength="6" placeholder="At least 6 characters" required>
+
+      <button type="submit">Sign Up</button>
+    </form>
+    <p class="link">Already registered? <a href="login.html">Log in</a></p>
+    <div id="signup-message" class="message hidden" role="status"></div>
+  </div>
+</body>
+</html>
