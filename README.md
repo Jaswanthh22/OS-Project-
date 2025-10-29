@@ -24,6 +24,7 @@ A minimal authentication workflow with username/password signup, one-time passco
 
 2. **Start the backend server**
    ```bash
+   set -a; source .env; set +a
    python3 server.py
    ```
    The API is available at `http://localhost:5000`. The SQLite database (`users.db`) is created automatically the first time the server runs.
