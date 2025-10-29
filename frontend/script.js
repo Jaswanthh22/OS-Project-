@@ -1,9 +1,38 @@
 "use strict";
 
-const API_BASE = "http://localhost:5050/api";  // use the actual port
+const DEFAULT_API_PORT = 5000;
+
+function resolveApiBase() {
+  if (typeof window === "undefined") {
+    return `http://localhost:${DEFAULT_API_PORT}/api`;
+  }
+
+  if (window.API_BASE_URL) {
+    return window.API_BASE_URL.replace(/\/+$/, "");
+  }
+
+  const { location } = window;
+  if (
+    location &&
+    typeof location.origin === "string" &&
+    location.origin !== "null" &&
+    location.protocol.startsWith("http")
+  ) {
+    return `${location.origin.replace(/\/+$/, "")}/api`;
+  }
+
+  if (window.API_PORT) {
+    return `http://localhost:${String(window.API_PORT).trim()}/api`;
+  }
+
+  return `http://localhost:${DEFAULT_API_PORT}/api`;
+}
+
+const API_BASE = resolveApiBase();
 
 const AUTH_FLAG_KEY = "auth:isAuthenticated";
 const AUTH_USER_KEY = "auth:username";
+const LOGIN_SUCCESS_KEY = "auth:login-success";
 
 function isAuthenticated() {
   return localStorage.getItem(AUTH_FLAG_KEY) === "true";
@@ -61,10 +90,15 @@ function handleSignupPage() {
     showMessage(message, "");
 
     const username = form.username.value.trim();
+    const email = form.email ? form.email.value.trim() : "";
     const password = form.password.value.trim();
 
-    if (!username || !password) {
-      showMessage(message, "Please provide both username and password.", "error");
+    if (!username || !password || !email) {
+      showMessage(
+        message,
+        "Please provide username, email, and password.",
+        "error"
+      );
       return;
     }
 
@@ -72,7 +106,7 @@ function handleSignupPage() {
       const response = await fetch(`${API_BASE}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
@@ -81,7 +115,11 @@ function handleSignupPage() {
         throw new Error(data.error || "Signup failed.");
       }
 
-      showMessage(message, "Account created. You can log in now.", "success");
+      showMessage(
+        message,
+        "Account created. Check your email for the OTP after logging in.",
+        "success"
+      );
       form.reset();
     } catch (err) {
       showMessage(message, err.message, "error");
@@ -114,9 +152,9 @@ function handleLoginPage() {
     pendingUsername = "";
     showMessage(loginMessage, "");
     showMessage(otpMessage, "");
-  if (otpSection) {
-    otpSection.classList.add("hidden");
-  }
+    if (otpSection) {
+      otpSection.classList.add("hidden");
+    }
 
     const username = loginForm.username.value.trim();
     const password = loginForm.password.value.trim();
@@ -140,14 +178,13 @@ function handleLoginPage() {
       }
 
       pendingUsername = username;
-      showMessage(
-        loginMessage,
-        `Your one-time code is ${data.otp}.`,
-        "success"
-      );
+      const emailHint = data.email_hint || "your email address on file";
+      showMessage(loginMessage, `We sent a one-time code to ${emailHint}.`, "success");
 
       if (otpInfo) {
-        otpInfo.textContent = `Enter the 6-digit code for ${username}.`;
+        otpInfo.textContent = data.email_hint
+          ? `Enter the 6-digit code we emailed to ${data.email_hint}.`
+          : "Enter the 6-digit code we emailed to your account.";
       }
 
       if (otpSection) {
@@ -191,6 +228,7 @@ function handleLoginPage() {
         throw new Error(data.error || "OTP verification failed.");
       }
 
+      sessionStorage.setItem(LOGIN_SUCCESS_KEY, "You successfully logged in.");
       setSession(pendingUsername);
       window.location.href = "dashboard.html";
     } catch (err) {
@@ -207,15 +245,23 @@ function handleDashboardPage() {
 
   const userDisplay = document.getElementById("dashboard-user");
   const logoutBtn = document.getElementById("logout-btn");
+  const statusMessage = document.getElementById("dashboard-message");
   const username = getStoredUsername();
+  const loginSuccessText = sessionStorage.getItem(LOGIN_SUCCESS_KEY);
 
   if (userDisplay) {
     userDisplay.textContent = username || "User";
   }
 
+  if (statusMessage && loginSuccessText) {
+    showMessage(statusMessage, loginSuccessText, "success");
+    sessionStorage.removeItem(LOGIN_SUCCESS_KEY);
+  }
+
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       clearSession();
+      sessionStorage.removeItem(LOGIN_SUCCESS_KEY);
       window.location.href = "login.html";
     });
   }
