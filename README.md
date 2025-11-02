@@ -53,7 +53,7 @@ PORT=5050 python server.py
 ## API Endpoints
 | Method | Endpoint      | Description                                      |
 |--------|---------------|--------------------------------------------------|
-| POST   | `/api/signup` | Create a user with `username`, `email`, and `password` |
+| POST   | `/api/signup` | Create a user with username, email, and password |
 | POST   | `/api/login`  | Validate credentials and email a 6-digit OTP (returns an email hint) |
 | POST   | `/api/verify` | Validate the OTP and clear it on success         |
 
