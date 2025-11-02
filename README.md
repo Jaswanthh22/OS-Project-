@@ -57,7 +57,7 @@ PORT=5050 python server.py
 | POST   | `/api/login`  | Validate credentials and email a 6-digit OTP (returns an email hint) |
 | POST   | `/api/verify` | Validate the OTP and clear it on success         |
 
-All endpoints accept and return JSON.
+**All endpoints accept and return JSON.**
 
 ## Usage Notes
 - Passwords are never stored in plain text—only bcrypt hashes are saved in the database.
